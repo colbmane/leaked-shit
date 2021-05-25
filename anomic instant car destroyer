@@ -1,0 +1,36 @@
+local Plr = game:GetService("Players").LocalPlayer
+local Mouse = Plr:GetMouse()
+local character = Plr.Character
+
+local function getGun()
+    local tool = character:FindFirstChildOfClass('Tool')
+    if not tool then
+        return(nil)
+    end
+    if tool:FindFirstChild('Handle') and tool.Handle:FindFirstChild('Shot') then
+        return(tool)
+    else
+        return(false)
+    end
+end
+
+Mouse.Button1Down:connect(function()
+    if not game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftControl) then return end
+    if not Mouse.Target then return end
+    if not getGun() then return end
+    if Mouse.Target.Parent:IsA('Model') and Mouse.Target.Parent:FindFirstChild("Humanoid") then
+        for _ = 1,50 do
+            if not getGun().Name == "Sawed Off" or not getGun().Name:find('Shotgun') then
+                game:GetService("ReplicatedStorage")["_CS.Events"].RayDrawer:FireServer(Vector3.new(0,0,0),workspace:FindFirstChildOfClass('Part'),getGun().Handle.Shot,Enum.NormalId.Top)
+            end
+            game:GetService("ReplicatedStorage")["_CS.Events"].WeaponServer:FireServer("Player",Mouse.Target.Parent.Humanoid,getGun().Name,game.Players.LocalPlayer.Character.HumanoidRootPart)
+        end
+    elseif Mouse.Target.Parent.Name == "Body" or Mouse.Target.Name == "Engine" then
+        for _ = 1,500 do
+            if not getGun().Name == "Sawed Off" or not getGun().Name:find('Shotgun') then
+                game:GetService("ReplicatedStorage")["_CS.Events"].RayDrawer:FireServer(Vector3.new(0,0,0),workspace:FindFirstChildOfClass('Part'),getGun().Handle.Shot,Enum.NormalId.Top)
+            end
+            game:GetService("ReplicatedStorage")["_CS.Events"].WeaponServer:FireServer("Vehicle",Mouse.Target,getGun().Name)
+        end
+    end
+end)
